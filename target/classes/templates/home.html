@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Simple Sidebar - Start Bootstrap Template</title>
+
+    <link th:href="@{/css/simple-sidebar.css}" rel="stylesheet" />
+	<link th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
+
+</head>
+
+<body>
+
+    <div id="wrapper" class="toggled">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Start Bootstrap
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onClick="listarUnidade()">Listar Unidades</a>
+                </li>
+                <li>
+                    <a href="#" onClick="listarPessoas()">Listar Pessoas</a>
+                </li>
+                <li>
+                    <a href="#" onClick="registrarPessoas()">Registrar Pessoa</a>
+                </li>
+                <li>
+                    <a href="#" onClick="pessoaEUnidade()">Registrar Unidade</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper-listar">
+            <div class="container-fluid">
+	            <div id="listarUnidade"></div>
+                <h1>Listar Unidades</h1>
+                <table class="table">
+			    <thead>
+			      <tr>
+			        <th>Unidade</th>
+			        <th>Nome</th>
+			        <th>Total Pessoas</th>
+			        <th>Total Salario</th>
+			      </tr>
+			    </thead>
+			    <tbody id="tabelaRelatorio">
+			    </tbody>
+			    </table>
+            </div>
+        </div>
+        
+        <div id="page-content-wrapper-listarPessoas">
+            <div class="container-fluid">
+	            <div id="listarUnidade"></div>
+                <h1>Listar Pessoas</h1>
+                <form class="form-inline">
+				  <div class="form-group col-md-10">
+				    <input type="text" class="form-control-plaintext" id="nomePessoa" placeholder="digite um nome">
+				  </div>
+				  <button type="button" id="procurar" onClick="procurarPessoa()" class="btn btn-primary">Procurar</button>
+                </form>
+                <br/>
+                <table class="table">
+			    <thead>
+			      <tr>
+			        <th>Pessoa</th>
+			        <th>Nome</th>
+			        <th>Salário</th>
+			      </tr>
+			    </thead>
+			    <tbody id="tabelaPessoas">
+			    </tbody>
+			    </table>
+            </div>
+        </div>
+        
+        <form id="registrarUsuario">
+	      <div class="col-md-8">
+	      <h1>Registrar Pessoa</h1>
+	      <br/>
+		  <div class="form-group">
+		    <label for="exampleInputEmail1">Nome pessoa:</label>
+		    <input type="text" class="form-control" name="pesNome" id="pesNome" placeholder="Seu nome">
+		  </div>
+		  <div class="form-group">
+		    <label for="exampleInputPassword1">Salario pessoa</label>
+		    <input type="number" class="form-control" name="salario" id="salario" placeholder="salário">
+		  </div>
+		  <button type="button" onClick="cadastrarPessoa()" class="btn btn-primary">Cadasrar</button>
+		  </div>
+		</form>
+		
+		<form id="registrarPessoaUnidade">
+	      <div class="col-md-8">
+	      <h1>Registrar Pessoa Com Unidade</h1>
+	      <br/>
+		  <div class="form-group">
+		    <label for="exampleInputEmail1">Nome pessoa:</label>
+		    <input type="text" class="form-control" name="pesNome" id="pesNomeUnidade" placeholder="Seu nome">
+		  </div>
+		  <div class="form-group">
+		    <label for="exampleInputPassword1">Salario pessoa</label>
+		    <input type="number" class="form-control" name="salario" id="salarioUnidade" placeholder="salário">
+		  </div>
+			<div class="form-group">
+		    <label for="exampleInputPassword1">Identificador Unidade</label>
+		    <input type="number" class="form-control" name="idUnidade" id="idUnidade" placeholder="identificar unidade">
+		  </div>		  
+		  <button type="button" onClick="cadastrarPessoa(true)" class="btn btn-primary">Cadasrar</button>
+		  </div>
+		</form>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+    <!-- Menu Toggle Script -->
+    <script th:inline="javascript">
+    
+    $('#page-content-wrapper-listar').ready(function() {
+    	$("#page-content-wrapper-listar").hide();
+    	$("#page-content-wrapper-listarPessoas").hide();
+    	$("#registrarUsuario").hide();
+    	$("#registrarPessoaUnidade").hide();
+    });
+    
+    var html = "";
+    
+    function listarUnidade(){
+    	$("#page-content-wrapper-listarPessoas").hide();
+    	$("#registrarUsuario").hide();
+    	$("#registrarPessoaUnidade").hide();
+    	$("#page-content-wrapper-listar").show();
+		$.ajax({
+	        url: [[@{/unidade/relatorio}]],
+	        data: {
+	            format: 'json'
+	        },
+	        complete: 'jsonp',
+	        success: function(data) {
+	           html = "";
+	           
+	           data.forEach(listarUnidadeHtml);
+	           
+	           $("#tabelaRelatorio").html(html);
+	        },
+	        type: 'GET'
+	      });
+	} 
+    
+    function listarPessoas(){
+    	$("#page-content-wrapper-listar").hide();
+    	$("#registrarUsuario").hide();
+    	$("#registrarPessoaUnidade").hide();
+    	$("#page-content-wrapper-listarPessoas").show();
+    	$.ajax({
+	        url: [[@{/pessoa}]],
+	        data: {
+	            format: 'json'
+	        },
+	        complete: 'jsonp',
+	        success: function(data) {
+	           html = "";
+	           
+	           data.forEach(listarPessoasHtml);
+	           
+	           $("#tabelaPessoas").html(html);
+	        },
+	        type: 'GET'
+	      });
+    }
+    
+   	function procurarPessoa(){
+      	$.ajax({
+  	        url: [[@{/pessoa/}]] + $("#nomePessoa").val(),
+  	        data: {
+  	            format: 'json'
+  	        },
+  	        complete: 'jsonp',
+  	        success: function(data) {
+  	           html = "";
+  	           console.log(data);
+  	           
+  	           data.forEach(listarPessoasHtml);
+  	           
+  	           $("#tabelaPessoas").html(html);
+  	        },
+  	        type: 'GET'
+  	      });
+      }
+   	
+   	function pessoaEUnidade(){
+   		$("#page-content-wrapper-listar").hide();
+   		$("#registrarPessoaUnidade").show();
+    	$("#page-content-wrapper-listarPessoas").hide();
+    	$("#registrarUsuario").hide();
+   	}
+	
+   	function cadastrarPessoa(unidade){
+   		var dadosEnvio = "";
+   		
+   		if(unidade == true){
+	   		var unidades = {
+	   				uniId : $("#idUnidade").val()
+	   		}
+	   		
+	   		//unidades = JSON.stringify(unidades); 
+	   		
+	   		dados = {
+	   	            pesNome : $('#pesNomeUnidade').val(),
+	   	            salario : $('#salarioUnidade').val(),
+	   	            unidade : unidades
+	   	        };
+
+	   		dados = JSON.stringify(dados);
+	   		
+	   		dadosEnvio = dados;
+	   	} else {
+	   		dados = {
+	   	            pesNome : $('#pesNome').val(),
+	   	            salario : $('#salario').val()
+	   	        };
+
+	   		dados = JSON.stringify(dados);
+	   		
+	   		dadosEnvio = dados;
+	   	}
+   		
+   		console.log(dadosEnvio);
+   		
+   		$.ajax({
+  	      url: [[@{/pessoa/}]],
+  	      type : 'POST',
+          data : dadosEnvio,
+          contentType : 'application/json',
+
+          success : function(response) {
+        	  if(unidade == false){
+	        	  $('#registrarUsuario').each (function(){
+	        		  this.reset();
+	        	  });
+        	  } else {
+        		  $('#registrarPessoaUnidade').each (function(){
+	        		  this.reset();
+	        	  });
+        	  }
+        	  
+        	  alert("Pessoa Cadastrada com sucess.");
+          }
+   		});
+   	}
+   	
+   	function registrarPessoas(){
+   		$("#page-content-wrapper-listar").hide();
+   		$("#registrarPessoaUnidade").hide();
+    	$("#page-content-wrapper-listarPessoas").hide();
+    	$("#registrarUsuario").show();
+   	}
+    
+    function listarUnidadeHtml(item, index, array) {
+    	html += "<tr><td>" + item.uniId +"</td><td>" + item.uniNome + "</td><td>" + item.totalPessoas + "</td><td>" + item.totalSalario + "</td></tr>"
+    }
+    
+    function listarPessoasHtml(item, index, array) {
+    	html += "<tr><td>" + item.pesId +"</td><td>" + item.pesNome + "</td><td>" + item.salario + "</td></tr>"
+    }
+    
+    function getFormData($form){
+        var unindexed_array = $form.serializeArray();
+        var indexed_array = {};
+
+        $.map(unindexed_array, function(n, i){
+            indexed_array['\"' + n['name'] + '\"'] = n['value'];
+        });
+
+        return indexed_array;
+    }
+    </script>
+
+</body>
+
+</html>
